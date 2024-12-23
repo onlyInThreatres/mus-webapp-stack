@@ -20,8 +20,8 @@ jobs:
           
       - name: 📦 Install dependencies
         run: |
-          npm install -g ts-node
           npm ci
+          npm install -g ts-node typescript
           
       - name: 🧪 Run tests
         run: npm run test:critical

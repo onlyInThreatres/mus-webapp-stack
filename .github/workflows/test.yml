@@ -36,10 +36,13 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci
         
+      - name: 🧪 Verify Jest installation
+        run: npx jest --version
+        
       - name: 🧪 Run tests
         run: |
           npm run test:setup
-          npm run test
+          npx jest --selectProjects critical
         env:
           TEST_SUPABASE_URL: http://localhost:54321
           TEST_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...

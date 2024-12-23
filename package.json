@@ -10,7 +10,7 @@
     "test": "npx jest",
     "test:watch": "npx jest --watch",
     "test:coverage": "npx jest --coverage",
-    "test:critical": "npx jest --selectProjects critical",
+    "test:critical": "npx jest --selectProjects critical --config jest.config.ts",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
@@ -61,16 +61,5 @@
     "tailwindcss": "^3.4.1",
     "ts-jest": "^29.2.5",
     "typescript": "^5.3.3"
-  },
-  "jest": {
-    "setupFilesAfterEnv": [
-      "<rootDir>/tests/setup/jest.setup.ts"
-    ],
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "testMatch": [
-      "**/*.test.ts",
-      "**/*.spec.ts"
-    ]
   }
 }

@@ -6,6 +6,7 @@
  */
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { Database } from '../types/supabase'
 import { logger } from '../utils/logger'
 
 // 🔍 Debug logging for environment variables
@@ -41,8 +42,8 @@ const setupDebugListeners = (client: SupabaseClient) => {
   }
 }
 
-// 🚀 Initialize Supabase client with detailed error handling
-export const supabase = createClient(
+// 🚀 Initialize typed Supabase client
+export const supabase = createClient<Database>(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   {

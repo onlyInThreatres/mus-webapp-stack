@@ -17,14 +17,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
           
       - name: 📦 Install dependencies
         run: |
           npm ci
-          npm install -g ts-node typescript
+          npm install ts-node@10.9.2 typescript@5.3.3 jest@29.7.0
           
       - name: 🧪 Run tests
-        run: npm run test:critical
+        run: |
+          npx jest --selectProjects critical --config jest.config.ts
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://pqcgagpijzghdedxwemi.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}

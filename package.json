@@ -11,7 +11,9 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:setup": "supabase start && npm run test:migrate",
-    "test:migrate": "supabase db reset --db-url=$TEST_DATABASE_URL"
+    "test:migrate": "supabase db reset --db-url=$TEST_DATABASE_URL",
+    "test:critical": "jest --selectProjects critical",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
@@ -29,6 +31,7 @@
     "@supabase/supabase-js": "^2.39.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "dotenv": "^16.4.7",
     "lucide-react": "^0.309.0",
     "next": "^14.2.21",
     "next-auth": "^4.24.5",
@@ -42,6 +45,8 @@
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@types/dotenv": "^8.2.3",
     "@types/jest": "^29.5.14",
     "@types/next-auth": "^3.15.0",
     "@types/node": "^20.11.0",
@@ -53,6 +58,7 @@
     "eslint": "^8.56.0",
     "eslint-config-next": "14.1.0",
     "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8.4.33",
     "tailwindcss": "^3.4.1",
     "ts-jest": "^29.2.5",

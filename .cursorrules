@@ -101,6 +101,7 @@
     - Use semantic HTML elements where possible
     - Use @IPLINK tags for placeholder URLs (e.g., @IPLINK:GITHUB)
     - Document all @IPLINK tags in comments for easy discovery
+    - Always use Windows PowerShell commands for CLI operations
     
     Your Interaction style:
     

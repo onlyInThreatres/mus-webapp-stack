@@ -1,16 +1,24 @@
-name: CI/CD Pipeline
+name: 🚀 CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, feature/*, develop ]
   pull_request:
     branches: [ main, develop ]
 
 jobs:
   test:
+    name: 🧪 Test & Validate
     runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      TEST_SUPABASE_URL: ${{ secrets.TEST_SUPABASE_URL }}
+      TEST_SUPABASE_ANON_KEY: ${{ secrets.TEST_SUPABASE_ANON_KEY }}
+      
     steps:
-      - uses: actions/checkout@v4
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
       
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
@@ -21,27 +29,27 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci
         
-      - name: 🧪 Run tests
-        run: |
-          npm run test
-          npm run test:critical
-        env:
-          TEST_SUPABASE_URL: ${{ secrets.TEST_SUPABASE_URL }}
-          TEST_SUPABASE_ANON_KEY: ${{ secrets.TEST_SUPABASE_ANON_KEY }}
+      - name: 🧪 Run critical tests
+        run: npm run test:critical
+        
+      - name: 🔍 Run all tests
+        run: npm run test:all
           
-      - name: 🔍 Type check
+      - name: 📝 Type check
         run: npm run type-check
         
-      - name: 🎨 Lint
+      - name: 🎨 Lint check
         run: npm run lint
 
   deploy:
+    name: 🚀 Deploy
     needs: test
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    
     steps:
       - uses: actions/checkout@v4
       

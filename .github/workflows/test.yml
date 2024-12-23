@@ -30,14 +30,16 @@ jobs:
           node-version: '20'
           
       - name: 📦 Install dependencies
-        run: npm ci
+        run: |
+          npm ci
+          npm install -D ts-node@10.9.2
         
       - name: 🧪 Verify Jest installation
         run: npx jest --version
         
       - name: 🧪 Run tests
         run: |
-          npm run test:critical
+          npx jest --selectProjects critical --config jest.config.ts
         env:
           NODE_ENV: test
           TEST_SUPABASE_URL: http://localhost:54321

@@ -1,0 +1,9 @@
+name: Critical Path Validation
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run Critical Path Tests
+        run: npm run test:critical 

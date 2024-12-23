@@ -1,12 +1,8 @@
 // 🔧 Test environment configuration
 const requiredEnvVars = {
-  NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || 'http://localhost:54321',
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...',
-}
-
-// Optional environment variables
-const optionalEnvVars = {
-  SUPABASE_SERVICE_KEY: process.env.SUPABASE_SERVICE_KEY // Only needed for admin operations
+  // Use production URLs for deployed environment, fallback to local for development
+  NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pqcgagpijzghdedxwemi.supabase.co',
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxY2dhZ3BpanpnaGRlZHh3ZW1pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5MTY5NDYsImV4cCI6MjA1MDQ5Mjk0Nn0.qeEdgrHqdMiDgv5OIj043G5tck0MSvHDLYi6BHyuEmE'
 }
 
 // 🔍 Validate required environment variables
@@ -16,10 +12,15 @@ Object.entries(requiredEnvVars).forEach(([key, value]) => {
   }
 })
 
+// 📝 Log the environment we're using (but mask sensitive values)
+console.log('🔧 Test Environment:', {
+  SUPABASE_URL: requiredEnvVars.NEXT_PUBLIC_SUPABASE_URL,
+  USING_PRODUCTION: requiredEnvVars.NEXT_PUBLIC_SUPABASE_URL.includes('pqcgagpijzghdedxwemi')
+})
+
 export const testEnv = {
-  ...requiredEnvVars,
-  ...optionalEnvVars
+  ...requiredEnvVars
 }
 
-// 🔍 Helper to check if we have admin access
-export const hasAdminAccess = Boolean(optionalEnvVars.SUPABASE_SERVICE_KEY) 
+// 🔍 Helper to check if we're using production Supabase
+export const isProduction = testEnv.NEXT_PUBLIC_SUPABASE_URL.includes('pqcgagpijzghdedxwemi')

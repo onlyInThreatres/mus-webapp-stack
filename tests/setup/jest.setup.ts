@@ -2,8 +2,8 @@
  * 🧪 Jest Setup Configuration
  */
 
-import '@testing-library/jest-dom'
-import dotenv from 'dotenv'
+const dotenv = require('dotenv')
+require('@testing-library/jest-dom')
 
 // 🔧 Load test environment variables
 dotenv.config({ path: '.env.test' })
@@ -13,5 +13,11 @@ beforeEach(() => {
   jest.clearAllMocks()
 })
 
-// ⏱️ Set default timeout
-jest.setTimeout(30000)
+// ⏱ Add longer timeout for Supabase operations
+jest.setTimeout(10000)
+
+// 🔍 Log environment info for debugging
+console.log('Test Environment:', {
+  SUPABASE_URL: process.env.TEST_SUPABASE_URL,
+  NODE_ENV: process.env.NODE_ENV,
+})

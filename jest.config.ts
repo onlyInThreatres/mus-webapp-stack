@@ -13,12 +13,26 @@ const customJestConfig: Config = {
       testMatch: ['**/__tests__/**/*.(spec|test).[jt]s?(x)'],
       testEnvironment: 'node',
       setupFilesAfterEnv: ['<rootDir>/tests/setup/jest.setup.ts'],
+      transform: {
+        '^.+\\.(t|j)sx?$': '@swc/jest',
+      },
+      extensionsToTreatAsEsm: ['.ts', '.tsx'],
+      moduleNameMapper: {
+        '^(\\.{1,2}/.*)\\.js$': '$1',
+      },
     },
     {
       displayName: 'unit',
       testMatch: ['**/*.test.[jt]s?(x)'],
       testEnvironment: 'jsdom',
       setupFilesAfterEnv: ['<rootDir>/tests/setup/jest.setup.ts'],
+      transform: {
+        '^.+\\.(t|j)sx?$': '@swc/jest',
+      },
+      extensionsToTreatAsEsm: ['.ts', '.tsx'],
+      moduleNameMapper: {
+        '^(\\.{1,2}/.*)\\.js$': '$1',
+      },
     }
   ],
   

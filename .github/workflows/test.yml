@@ -41,8 +41,7 @@ jobs:
         run: |
           npx jest --selectProjects critical --config jest.config.ts
         env:
-          NODE_ENV: test
-          TEST_SUPABASE_URL: http://localhost:54321
+          NODE_ENV: test          TEST_SUPABASE_URL: http://localhost:54321
           TEST_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
           TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:54321/postgres
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}

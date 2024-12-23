@@ -22,6 +22,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: 🔧 Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -31,8 +37,11 @@ jobs:
         run: npm ci
         
       - name: 🧪 Run tests
-        run: npm test
+        run: |
+          npm run test:setup
+          npm run test
         env:
           TEST_SUPABASE_URL: http://localhost:54321
           TEST_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:54321/postgres 
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:54321/postgres
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}

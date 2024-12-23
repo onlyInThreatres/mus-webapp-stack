@@ -3,26 +3,15 @@
  */
 
 import '@testing-library/jest-dom'
-import { TEST_CONFIG, resetTestData, generateTestProfile } from './test-config'
-import { Profile } from '../../lib/types/supabase'
+import dotenv from 'dotenv'
 
-// 🔧 Global test setup
-beforeAll(() => {
-  // Validate test environment
-  if (!process.env.TEST_SUPABASE_URL) {
-    console.warn('⚠️ TEST_SUPABASE_URL not set, using default')
-  }
+// 🔧 Load test environment variables
+dotenv.config({ path: '.env.test' })
+
+// 🧹 Clear mocks between tests
+beforeEach(() => {
+  jest.clearAllMocks()
 })
 
-// 🧹 Clean up after each test
-afterEach(async () => {
-  // Reset test data
-  await resetTestData()
-})
-
-// 📝 Global test utilities
-declare global {
-  var generateTestProfile: (override?: Partial<Profile>) => Profile
-}
-
-globalThis.generateTestProfile = generateTestProfile
+// ⏱️ Set default timeout
+jest.setTimeout(30000)

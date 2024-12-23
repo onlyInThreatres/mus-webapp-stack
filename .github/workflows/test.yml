@@ -11,22 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     
     services:
-      # Add Supabase local setup
-      supabase:
-        image: supabase/supabase-local
+      # Update to use the public Supabase testing image
+      postgres:
+        image: supabase/postgres:15.1.0.117
         ports:
-          - 54321:54321
+          - 54321:5432
         env:
           POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
     
     steps:
       - uses: actions/checkout@v4
-      
-      - name: 🔧 Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
       
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
@@ -41,8 +37,7 @@ jobs:
         
       - name: 🧪 Run tests
         run: |
-          npm run test:setup
-          npx jest --selectProjects critical
+          npm run test:critical
         env:
           TEST_SUPABASE_URL: http://localhost:54321
           TEST_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...

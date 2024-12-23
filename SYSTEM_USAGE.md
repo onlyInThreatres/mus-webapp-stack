@@ -1,0 +1,13 @@
+Directory Structure and Usage:
+- app/: Contains Next.js App Router pages and layouts.
+  - globals.css: Global styles for the application.
+  - layout.tsx: Shared layout for all pages.
+  - page.tsx: Main landing page.
+- components/: Reusable UI and layout components.
+  - ui/: Buttons, modals, etc.
+  - layout/: Navbar, Footer, and other layout-related components.
+  - auth/: Components for authentication (e.g., LoginForm, Avatar).
+- hooks/: Custom React hooks for shared logic.
+- lib/: Utility files (e.g., Supabase client, helper functions).
+- middleware.ts: Protects authenticated routes like '/dashboard'.
+- public/: Static assets like images, icons, and fonts.

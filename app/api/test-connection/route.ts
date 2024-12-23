@@ -10,40 +10,59 @@ import { NextResponse } from 'next/server'
 
 export async function GET() {
   try {
-    // 🔍 Log environment variables (masked for security)
+    // 🔍 Validate environment variables
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    // 📝 Debug logging (safe - no sensitive data)
     console.log('🔧 Environment check:', {
-      HAS_URL: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
-      HAS_KEY: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
-      URL_LENGTH: process.env.NEXT_PUBLIC_SUPABASE_URL?.length || 0,
-      KEY_LENGTH: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.length || 0
+      timestamp: new Date().toISOString(),
+      hasUrl: Boolean(supabaseUrl),
+      hasKey: Boolean(supabaseKey),
+      urlLength: supabaseUrl?.length || 0,
+      keyLength: supabaseKey?.length || 0
     })
 
-    // Validate environment variables
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      throw new Error('supabasekey is required')
+    if (!supabaseUrl || !supabaseKey) {
+      return NextResponse.json({
+        error: 'Configuration error',
+        details: 'Missing required environment variables',
+        missingVars: {
+          url: !supabaseUrl,
+          key: !supabaseKey
+        }
+      }, { status: 500 })
     }
 
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    )
+    // 🔗 Create Supabase client
+    const supabase = createClient(supabaseUrl, supabaseKey)
 
-    // Test the connection
+    // 🧪 Simple health check
     const { data, error } = await supabase.auth.getSession()
 
-    if (error) throw error
+    if (error) {
+      console.error('🔴 Supabase error:', {
+        code: error.code,
+        message: error.message,
+        status: error.status
+      })
+      throw error
+    }
 
+    // ✅ Success response
     return NextResponse.json({ 
       success: true, 
       message: 'Connection successful',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      sessionData: data ? 'Present' : 'None'
     })
 
   } catch (error) {
     console.error('🔴 Connection test failed:', error)
     return NextResponse.json({ 
       error: 'Connection test failed', 
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString()
     }, { status: 500 })
   }
 } 

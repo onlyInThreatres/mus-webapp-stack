@@ -2,7 +2,7 @@
  * 🧪 Jest Setup Configuration
  */
 
-const dotenv = require('dotenv')
+import dotenv from 'dotenv'
 require('@testing-library/jest-dom')
 
 // 🔧 Load test environment variables
@@ -21,3 +21,5 @@ console.log('Test Environment:', {
   SUPABASE_URL: process.env.TEST_SUPABASE_URL,
   NODE_ENV: process.env.NODE_ENV,
 })
+
+// Add any other test setup here

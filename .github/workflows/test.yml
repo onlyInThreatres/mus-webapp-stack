@@ -1,29 +1,41 @@
-name: 🧪 Test Suite
+name: 🧪 Critical Path Validation
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, feature/*, develop ]
   pull_request:
     branches: [ main, develop ]
 
 jobs:
   test:
+    name: 🧪 Test Suite
     runs-on: ubuntu-latest
     
-    steps:
-      - uses: actions/checkout@v4
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       
-      - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v4
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: '18'
           
-      - name: 📦 Install dependencies
-        run: npm ci
+      - name: 💾 Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           
-      - name: 🧪 Run tests
+      - name: 📥 Install dependencies
+        run: |
+          npm ci
+          npm install -g cross-env
+        
+      - name: 🧪 Run critical tests
         run: npm run test:critical
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: https://pqcgagpijzghdedxwemi.supabase.co
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        
+      - name: 🏗️ Build check
+        run: npm run build

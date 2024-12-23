@@ -10,7 +10,7 @@
     "test": "npx jest",
     "test:watch": "npx jest --watch",
     "test:coverage": "npx jest --coverage",
-    "test:critical": "npx jest --selectProjects critical --config jest.config.ts",
+    "test:critical": "jest --selectProjects critical --config jest.config.js",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

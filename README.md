@@ -1,3 +1,17 @@
+# Next.js SaaS Boilerplate
+
+![CI/CD](https://github.com/{username}/{repo}/workflows/CI%2FCD%20Pipeline/badge.svg)
+![Test Coverage](https://img.shields.io/badge/coverage-WIP-yellow)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
+![Supabase](https://img.shields.io/badge/Supabase-2.0-green)
+
+## 🚀 Progress
+
+- ✅ Database Foundation
+- ✅ Type Safety
+- 🏗️ Testing Infrastructure
+- 📋 Auth (Coming Soon)
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

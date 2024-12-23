@@ -1,57 +1,49 @@
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { getToken } from 'next-auth/jwt'
 
-// Define public routes that don't require authentication
-const publicRoutes = ['/', '/login', '/signup', '/forgot-password']
-
+/**
+ * Middleware to handle authentication routes
+ * - Uses Supabase for email/password routes (/auth/*)
+ * - Uses Auth.js for OAuth routes (/api/auth/*)
+ */
 export async function middleware(request: NextRequest) {
   try {
-    // Initialize response and Supabase client
     const res = NextResponse.next()
-    const supabase = createMiddlewareClient({ req: request, res })
-
-    // Get current pathname
     const { pathname } = request.nextUrl
-    console.log(`[Middleware] Checking route: ${pathname}`)
 
-    // Check if the route is public
-    const isPublicRoute = publicRoutes.includes(pathname)
-    console.log(`[Middleware] Is public route: ${isPublicRoute}`)
-
-    // Get session
-    const { data: { session } } = await supabase.auth.getSession()
-    console.log(`[Middleware] Session exists: ${!!session}`)
-
-    // TODO: Implement redirect logic based on your requirements
-    // Example structure:
-    // if (!session && !isPublicRoute) {
-    //   console.log('[Middleware] Unauthorized access, redirecting to login')
-    //   return NextResponse.redirect(new URL('/login', request.url))
-    // }
-    
-    // if (session && pathname === '/login') {
-    //   console.log('[Middleware] Logged in user accessing login page, redirecting to dashboard')
-    //   return NextResponse.redirect(new URL('/dashboard', request.url))
-    // }
+    // Determine which auth system to check based on route
+    if (pathname.startsWith('/auth/')) {
+      // 📧 Supabase Email/Password Routes
+      const supabase = createMiddlewareClient({ req: request, res })
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session && pathname.startsWith('/auth/protected')) {
+        console.log('🔒 Unauthorized access to Supabase protected route:', pathname)
+        return NextResponse.redirect(new URL('/auth/login', request.url))
+      }
+    } 
+    else if (pathname.startsWith('/oauth/')) {
+      // 🔑 Auth.js OAuth Routes
+      const token = await getToken({ req: request })
+      
+      if (!token && pathname.startsWith('/oauth/protected')) {
+        console.log('🔒 Unauthorized access to OAuth protected route:', pathname)
+        return NextResponse.redirect(new URL('/oauth/login', request.url))
+      }
+    }
 
     return res
   } catch (error) {
-    console.error('[Middleware] Error:', error)
-    // On error, allow the request to continue
+    console.error('🚨 Middleware error:', error)
     return NextResponse.next()
   }
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/auth/:path*',   // Supabase email/password routes
+    '/oauth/:path*',  // Auth.js OAuth routes
   ],
 }

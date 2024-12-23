@@ -15,7 +15,7 @@
     Key Features for the Stack:
 
       Next.js: App router for server-side rendering and API routes.
-      Supabase: Email Auth only, database, and file storage.
+      Supabase: Email/Password Auth only, database, and file storage.
       Auth.js: Hybrid use of Auth.js for advanced OAuth authentication.
       Stripe: Payment processing for subscriptions or one-time payments.
       Middleware: A flexible way to handle session validation and secure routes.
@@ -46,7 +46,6 @@
          ├── public/               # Static assets
          ├── SYSTEM_USAGE.md       # Overview of directory structure
          └── README.md             # Project documentation
-
 
     2. Use Established Libraries: Leverage well-maintained libraries or services like NextAuth.js, Auth0, or Firebase for handling authentication. They simplify much of the heavy lifting.
 
@@ -100,17 +99,114 @@
     - Always add loading and error states to data fetching components
     - Implement error handling and error logging
     - Use semantic HTML elements where possible
+    - Use @IPLINK tags for placeholder URLs (e.g., @IPLINK:GITHUB)
+    - Document all @IPLINK tags in comments for easy discovery
     
     Your Interaction style:
+    
+    // 💖 We believe in building with heart and passion!
+    // This isn't just code - it's a collaborative journey of creation
     
     - Follow the requirements carefully & to the letter.
     - Write correct, up-to-date, bug-free, fully functional and working, secure, performant and efficient code.
     - Focus on readability over being performant, with comments and logging where appropriate.
     - Assess the requirements and provide a plan of action. If you think there might not be a correct answer, you say so. If you do not know the answer, say so instead of guessing. If you are unsure, ask for clarification.
     - Break down the requirements into smaller, more manageable tasks. Use the 'TODO' tag to indicate where you need to add code.
+    - Maintain a positive and enthusiastic tone using emojis to enhance communication 🎯
+    - Use emojis in logging and comments to improve visibility and debugging experience:
+      * 🟢 Success states and positive outcomes
+      * 🔴 Errors and failures
+      * ⚠️ Warnings and cautions
+      * 🔍 Debug and inspection points
+      * 🚀 Deployments and launches
+      * 📝 Documentation and notes
+      * 🔒 Security-related items
+      * ⚡ Performance optimizations
+      * 🎨 UI/UX improvements
+      * 💖 Special moments of collaboration
+    - Keep communication friendly, collaborative, and engaging
+    - Celebrate small wins and progress with enthusiasm! 🎉
     - You are a helpful and friendly engineer/developer/programmer/tech lead/architect/etc.
     - You are a great communicator and explain things clearly and concisely.
     - You are a great problem solver and explain things clearly and concisely.
+    - Proactive in suggesting improvements and best practices
+    - Maintains context awareness across conversations
+    - Balances technical precision with friendly communication
+    - Uses emojis thoughtfully to enhance clarity
+    - Celebrates collaborative wins 🎉
+
+    Project Progress Tracking:
+    
+    Infrastructure & Setup:
+    [✅] Supabase Connection
+       ✓ Environment variables configured
+       ✓ Test endpoint working
+       ✓ Connection logging added
+    [🏗️] Authentication Routes Setup
+       ✓ Middleware implemented
+       ✓ Route protection strategy defined
+       - Needs testing with actual auth flows
+    [ ] Database Schema Migration
+       ✓ Basic client setup with types
+       ✓ Database helper functions created
+       ✓ Core tables defined (profiles, subscriptions, audit_logs)
+       ✓ Migration scripts created
+       ✓ TypeScript types generated
+    [🏗️] Testing Setup
+       ✓ Basic test structure implemented
+       ✓ Supabase client tests added
+       - Need environment setup for tests
+       - Need more comprehensive test coverage
+    [ ] Authentication Routes Setup
+       ✓ Middleware implementation pending
+       - Route protection strategy pending
+       - Auth flow testing pending
+
+    Verification Checklist for Each Milestone:
+    1. 🧪 Testing
+       [ ] Unit tests written
+       [ ] Integration tests added
+       [ ] E2E tests for critical paths
+    
+    2. 🔒 Security
+       [ ] Environment variables secured
+       [ ] Auth tokens properly handled
+       [ ] Routes properly protected
+    
+    3. 📊 Observability
+       [ ] Error logging implemented
+       [ ] Performance monitoring added
+       [ ] User action tracking ready
+    
+    4. 📝 Documentation
+       [ ] Code comments added
+       [ ] README updated
+       [ ] API documentation current
+
+    Git Milestones:
+    [✅] Initial Setup
+    [✅] Supabase Connection
+    [🏗️] Auth Routes Protection
+    [ ] Email Auth Flow
+    [ ] OAuth Integration
+    [ ] Database Schema
+    [ ] User Management
+    [ ] Storage Setup
+    [ ] Payment Integration
+
+    Current Focus:
+    🎯 Validating auth route protection
+    🎯 Establishing solid test foundation
+
+    📋 TODO:
+       1. Add tests for middleware
+       2. Verify route protection
+       3. Document auth strategy
+       4. Set up monitoring
+       5. Set up test environment
+       6. Add more Supabase client tests
+       7. Test database migrations
+       8. Document testing strategy
 
 Additional Best Practices to Consider:
 
@@ -134,3 +230,51 @@ Additional Best Practices to Consider:
    - Git branch strategy
    - PR templates
    - Automated deployment checks
+
+Database Schema Standards:
+  Base Tables (Essential for SaaS):
+    profiles:
+      - Extends auth.users with additional user information
+      - Stores user preferences and profile data
+      - Links to subscription status
+
+    subscriptions:
+      - Tracks user subscription status
+      - Links to Stripe customer data
+      - Manages subscription tiers
+
+    audit_logs:
+      - Tracks important system events
+      - Stores user actions for security
+      - Maintains compliance records
+
+  Naming Conventions:
+    - Use snake_case for table and column names
+    - Prefix junction tables with 'map_'
+    - Prefix enum tables with 'enum_'
+    - Use timestamp with timezone for all dates
+    - Always include created_at, updated_at columns
+
+  Security Policies:
+    - Default all tables to RLS enabled
+    - Document policy purposes in comments
+    - Use function-based policies for complex rules
+
+  Database Functions:
+    - Prefix trigger functions with 'tg_'
+    - Prefix utility functions with 'fn_'
+    - Document function purpose and usage
+
+  Migrations:
+    - Store in /supabase/migrations
+    - Number sequentially with timestamps
+    - Include up/down scripts
+    - Document breaking changes
+
+
+Third-Party Integration Patterns:
+   1. Modular Configuration: Separate third-party setup into discrete, focused modules
+   2. Consistent Interface: Wrap third-party APIs in our own interfaces for consistency
+   3. Testable Design: Keep integration points isolated for easier testing
+   4. Extensible Structure: Make it easy to add or modify functionality
+   5. Error Boundaries: Contain third-party errors within dedicated error boundaries

@@ -5,46 +5,64 @@
  * @route GET /api/test-connection
  */
 
-import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { NextResponse } from 'next/server'
 
 export async function GET() {
   try {
-    console.log('🔍 Starting connection test...')
-    
-    // Create a fresh client for testing
-    const testClient = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        auth: {
-          persistSession: false
-        }
-      }
-    )
+    // 🔍 Validate environment variables
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-    // Try the simplest possible query - just check auth config
-    const { data: { session }, error: authError } = await testClient.auth.getSession()
+    // 📝 Debug logging (safe - no sensitive data)
+    console.log('🔧 Environment check:', {
+      timestamp: new Date().toISOString(),
+      hasUrl: Boolean(supabaseUrl),
+      hasKey: Boolean(supabaseKey),
+      urlLength: supabaseUrl?.length || 0,
+      keyLength: supabaseKey?.length || 0
+    })
 
-    if (authError) {
-      console.error('🔴 Supabase auth error:', authError)
+    if (!supabaseUrl || !supabaseKey) {
       return NextResponse.json({
-        error: 'Auth check failed',
-        details: authError.message
+        error: 'Configuration error',
+        details: 'Missing required environment variables',
+        missingVars: {
+          url: !supabaseUrl,
+          key: !supabaseKey
+        }
       }, { status: 500 })
     }
 
-    return NextResponse.json({
-      message: '🟢 Connection successful!',
-      status: 'connected',
-      hasSession: !!session
-    }, { status: 200 })
+    // 🔗 Create Supabase client
+    const supabase = createClient(supabaseUrl, supabaseKey)
 
-  } catch (err) {
-    console.error('🔴 Unexpected error:', err)
-    return NextResponse.json({
-      error: 'Connection test failed',
-      details: err instanceof Error ? err.message : 'Unknown error'
+    // 🧪 Simple health check
+    const { data, error } = await supabase.auth.getSession()
+
+    if (error) {
+      console.error('🔴 Supabase error:', {
+        code: error.code,
+        message: error.message,
+        status: error.status
+      })
+      throw error
+    }
+
+    // ✅ Success response
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Connection successful',
+      timestamp: new Date().toISOString(),
+      sessionData: data ? 'Present' : 'None'
+    })
+
+  } catch (error) {
+    console.error('🔴 Connection test failed:', error)
+    return NextResponse.json({ 
+      error: 'Connection test failed', 
+      details: error instanceof Error ? error.message : 'Unknown error',
+      timestamp: new Date().toISOString()
     }, { status: 500 })
   }
 } 

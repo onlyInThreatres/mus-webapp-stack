@@ -29,8 +29,10 @@ console.log('🔧 Test Environment:', {
   HAS_ANON_KEY: Boolean(requiredEnvVars.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 })
 
+// Ensure values are defined after validation
 export const testEnv = {
-  ...requiredEnvVars
+  NEXT_PUBLIC_SUPABASE_URL: requiredEnvVars.NEXT_PUBLIC_SUPABASE_URL || '',
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: requiredEnvVars.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 } as const
 
-export const isProduction = testEnv.NEXT_PUBLIC_SUPABASE_URL.includes('pqcgagpijzghdedxwemi')
+export const isProduction = testEnv.NEXT_PUBLIC_SUPABASE_URL?.includes('pqcgagpijzghdedxwemi') || false

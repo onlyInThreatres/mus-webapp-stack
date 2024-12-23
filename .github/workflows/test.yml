@@ -19,20 +19,12 @@ jobs:
           node-version: '20'
           
       - name: 📦 Install dependencies
-        run: npm ci
-        
-      - name: 🐳 Start Supabase
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-          
-      - name: 🚀 Start Supabase services
         run: |
-          supabase start
+          npm install -g ts-node
+          npm ci
           
       - name: 🧪 Run tests
         run: npm run test:critical
         env:
-          NEXT_PUBLIC_SUPABASE_URL: http://localhost:54321
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...
-          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: https://pqcgagpijzghdedxwemi.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}

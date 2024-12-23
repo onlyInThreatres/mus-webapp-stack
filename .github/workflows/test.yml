@@ -30,12 +30,11 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           
       - name: 📥 Install dependencies
-        run: |
-          npm ci
-          npm install -g jest
+        run: npm ci
         
       - name: 🧪 Run critical tests
-        run: NODE_ENV=test jest --selectProjects critical --config jest.config.js
+        run: |
+          npx jest --selectProjects critical --config jest.config.js
         
       - name: 🏗️ Build check
         run: npm run build

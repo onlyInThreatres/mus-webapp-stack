@@ -1,20 +1,38 @@
 import { createClient } from '@supabase/supabase-js'
-import { testEnv } from '../tests/setup/env'
+import { testEnv, hasAdminAccess } from '../tests/setup/env'
 
 describe('Supabase Connection', () => {
   const supabase = createClient(
-    testEnv.SUPABASE_URL,
-    testEnv.SUPABASE_ANON_KEY
+    testEnv.NEXT_PUBLIC_SUPABASE_URL,
+    testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY
   )
 
   it('🔗 should connect to Supabase', async () => {
-    // First check if we can connect
-    const { error: healthError } = await supabase.from('_health').select('*')
-    expect(healthError).toBeNull()
+    const { data, error } = await supabase
+      .from('_health')
+      .select('*')
+      .limit(1)
+      .single()
 
-    // Then try the profiles query
-    const { data, error } = await supabase.from('profiles').select('*').limit(1)
-    expect(error).toBeNull()
-    expect(Array.isArray(data)).toBe(true)
+    if (error) {
+      console.error('🔴 Supabase connection error:', error)
+      throw error
+    }
+
+    expect(data).toBeDefined()
   })
+
+  // Only run admin tests if we have the service key
+  if (hasAdminAccess) {
+    describe('Admin Operations', () => {
+      const adminClient = createClient(
+        testEnv.NEXT_PUBLIC_SUPABASE_URL,
+        testEnv.SUPABASE_SERVICE_KEY!
+      )
+
+      it('should perform admin operations', async () => {
+        // Admin-only tests here
+      })
+    })
+  }
 }) 

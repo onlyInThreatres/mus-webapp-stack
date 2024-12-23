@@ -1,9 +1,17 @@
-// 🔧 Load environment variables for testing
-require('dotenv').config({ path: '.env.local' })
+// 🔧 Jest Setup Configuration
+require('@testing-library/jest-dom')
+require('dotenv').config({ path: '.env.test' })
 
-// 📝 Add any additional test setup here
-console.log('🔍 Environment check:', {
+// 🧹 Clear mocks between tests
+beforeEach(() => {
+  jest.clearAllMocks()
+})
+
+// ⏱ Add longer timeout for Supabase operations
+jest.setTimeout(10000)
+
+// 🔍 Log environment info for debugging
+console.log('Test Environment:', {
+  SUPABASE_URL: process.env.TEST_SUPABASE_URL,
   NODE_ENV: process.env.NODE_ENV,
-  hasTestUrl: Boolean(process.env.TEST_SUPABASE_URL),
-  hasTestKey: Boolean(process.env.TEST_SUPABASE_ANON_KEY)
-}) 
+})

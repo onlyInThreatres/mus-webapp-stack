@@ -1,22 +1,16 @@
 // 🔧 Test environment configuration
-const testConfig = {
-  // Use production Supabase credentials for testing
-  NEXT_PUBLIC_SUPABASE_URL: 'https://pqcgagpijzghdedxwemi.supabase.co',
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxY2dhZ3BpanpnaGRlZHh3ZW1pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5MTY5NDYsImV4cCI6MjA1MDQ5Mjk0Nn0.qeEdgrHqdMiDgv5OIj043G5tck0MSvHDLYi6BHyuEmE'
+const testEnv = {
+  NEXT_PUBLIC_SUPABASE_URL: process.env.TEST_SUPABASE_URL,
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.TEST_SUPABASE_ANON_KEY,
+  NODE_ENV: process.env.NODE_ENV || 'test',
 }
 
-// 🚦 Environment mode check
+// 🚀 Environment helpers
 const isProduction = process.env.NODE_ENV === 'production'
+const isTest = process.env.NODE_ENV === 'test'
 
-// 📝 Debug environment variables (no sensitive data)
-console.log('🔧 Test environment loaded:', {
-  hasUrl: Boolean(testConfig.NEXT_PUBLIC_SUPABASE_URL),
-  hasKey: Boolean(testConfig.NEXT_PUBLIC_SUPABASE_ANON_KEY),
-  env: process.env.NODE_ENV
-})
-
-// 📤 Export using CommonJS for Jest compatibility
 module.exports = {
-  testEnv: testConfig,
+  testEnv,
   isProduction,
+  isTest,
 } 

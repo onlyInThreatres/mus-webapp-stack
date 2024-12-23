@@ -7,20 +7,7 @@ const config = {
     '^@/(.*)$': '<rootDir>/$1',
   },
   transform: {
-    '^.+\\.(t|j)sx?$': ['@swc/jest', {
-      jsc: {
-        parser: {
-          syntax: 'typescript',
-          tsx: true,
-          decorators: true,
-        },
-        transform: {
-          react: {
-            runtime: 'automatic',
-          },
-        },
-      },
-    }],
+    '^.+\\.(js|jsx)$': ['@swc/jest'],
   },
   transformIgnorePatterns: [
     'node_modules/(?!(@supabase/supabase-js)/)',
@@ -28,23 +15,29 @@ const config = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   projects: [
     {
-      displayName: 'critical',
-      testMatch: ['<rootDir>/__tests__/**/*.test.js'],
+      displayName: '🚨 Critical',
+      testMatch: ['<rootDir>/__tests__/critical/**/*.test.js'],
+      testEnvironment: 'node',
     },
     {
-      displayName: 'components',
-      testMatch: ['<rootDir>/__tests__/components/**/*.test.js'],
+      displayName: '🧪 Unit',
+      testMatch: ['<rootDir>/__tests__/unit/**/*.test.js'],
+      testEnvironment: 'jsdom',
     },
     {
-      displayName: 'api',
-      testMatch: ['<rootDir>/__tests__/api/**/*.test.js'],
+      displayName: '🔗 Integration',
+      testMatch: ['<rootDir>/__tests__/integration/**/*.test.js'],
+      testEnvironment: 'node',
     },
     {
-      displayName: 'auth',
-      testMatch: ['<rootDir>/__tests__/auth/**/*.test.js'],
+      displayName: '🌐 E2E',
+      testMatch: ['<rootDir>/__tests__/e2e/**/*.test.js'],
+      testEnvironment: 'node',
     }
   ],
-  preset: 'ts-jest',
+  collectCoverage: true,
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'clover'],
   testPathIgnorePatterns: ['/node_modules/', '/.next/'],
 }
 

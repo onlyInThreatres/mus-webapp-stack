@@ -25,7 +25,7 @@ const features = [
 
 export default function Features() {
   return (
-    <div className="py-24 bg-background" id="features">
+    <div className="py-16 md:py-20 bg-background min-h-screen flex items-center" id="features">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h2 className="text-lg text-primary font-semibold tracking-wide uppercase">FEATURES</h2>
@@ -37,8 +37,8 @@ export default function Features() {
           </p>
         </div>
 
-        <div className="mt-20">
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
+        <div className="mt-16">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
             {features.map((feature) => (
               <div key={feature.name} className="flex">
                 <div className="flex-shrink-0">

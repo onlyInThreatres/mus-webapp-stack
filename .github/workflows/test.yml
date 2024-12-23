@@ -32,10 +32,10 @@ jobs:
       - name: 📥 Install dependencies
         run: |
           npm ci
-          npm install -g cross-env
+          npm install -g jest
         
       - name: 🧪 Run critical tests
-        run: npm run test:critical
+        run: NODE_ENV=test jest --selectProjects critical --config jest.config.js
         
       - name: 🏗️ Build check
         run: npm run build

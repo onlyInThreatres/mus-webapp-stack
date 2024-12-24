@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  vector:
+    # Disable Vector's Docker logs collection
+    environment:
+      - VECTOR_CONFIG=/etc/vector/vector.toml
+      - VECTOR_WATCH_CONFIG=false
+      - DOCKER_HOST=null
+    volumes:
+      - ./volumes/vector:/etc/vector:ro
+    # More forgiving health check
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  studio:
+    # Make Studio more resilient
+    restart: unless-stopped
+    healthcheck:
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  db:
+    # Improve database stability
+    command: postgres -c 'max_connections=200'
+    healthcheck:
+      interval: 30s
+      timeout: 10s
+      retries: 3 

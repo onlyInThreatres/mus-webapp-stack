@@ -1,6 +1,6 @@
 // 🎨 UI Component Tests
-const React = require('react')
-const { render, screen } = require('@testing-library/react')
+import React from 'react'
+import { render, screen } from '@testing-library/react'
 
 describe('UI Components', () => {
   it('🎯 sample test', () => {

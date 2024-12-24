@@ -1,0 +1,11 @@
+[api]
+enabled = true
+address = "0.0.0.0:9001"
+
+[sources.internal_logs]
+type = "internal_logs"
+
+[sinks.console]
+type = "console"
+inputs = ["internal_logs"]
+encoding.codec = "json" 

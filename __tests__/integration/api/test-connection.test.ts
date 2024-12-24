@@ -1,5 +1,5 @@
 // 🧪 API Route Tests
-const { testEnv } = require('../../tests/setup/env')
+import { testEnv } from '../../setup/env'
 
 describe('API Routes', () => {
   const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'

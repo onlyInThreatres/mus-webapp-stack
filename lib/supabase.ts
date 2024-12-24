@@ -1,32 +1,24 @@
 import { createClient } from '@supabase/supabase-js'
 import { logger } from '@/lib/utils/logger'
 
-// 🔒 Validate environment variables
-if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-  throw new Error('⚠️ Missing NEXT_PUBLIC_SUPABASE_URL')
+// Environment validation
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
+const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+  throw new Error('Missing Supabase environment variables')
 }
 
-if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-  throw new Error('⚠️ Missing NEXT_PUBLIC_SUPABASE_ANON_KEY')
-}
-
-/**
- * 🔒 Supabase Client Configuration
- * Creates and exports a Supabase client instance
- */
-export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  {
-    auth: {
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: true
-    }
+// Create client with development-specific options
+export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    debug: process.env.NODE_ENV === 'development'
   }
-)
+})
 
-// 🔍 Development logging
+// Development logging
 if (process.env.NODE_ENV === 'development') {
   logger.info('🚀 Supabase client initialized')
 }

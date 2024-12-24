@@ -1,0 +1,4 @@
+version: "3.8"
+services:
+  vector:
+    profiles: ["disabled"]  # This will prevent Vector from starting 

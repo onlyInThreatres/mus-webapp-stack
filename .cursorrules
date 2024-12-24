@@ -208,7 +208,7 @@
     Next Milestone:
     🎯 Database Schema & Auth Implementation
 
-    
+
     📋 TODO:
        1. Add tests for middleware
        2. Verify route protection
@@ -290,3 +290,68 @@ Third-Party Integration Patterns:
    3. Testable Design: Keep integration points isolated for easier testing
    4. Extensible Structure: Make it easy to add or modify functionality
    5. Error Boundaries: Contain third-party errors within dedicated error boundaries
+
+   Documentation Standards:
+   Directory Structure:
+     docs/
+       ├── README.md              # Documentation home
+       ├── getting-started.md     # Setup guide
+       ├── architecture.md        # System design
+       ├── development.md         # Dev workflow
+       ├── testing.md            # Test strategy
+       ├── deployment.md         # Deploy guide
+       └── api/                  # API documentation
+           └── README.md         # API overview
+
+   Documentation Rules:
+     - Keep docs close to code
+     - Update docs with code changes
+     - Use clear headings and sections
+     - Include code examples
+     - Add troubleshooting guides
+     - Document breaking changes
+
+
+       Testing Standards:
+    Directory Structure:
+      tests/
+        ├── __tests__/           # Test files
+        │   ├── critical/        # Critical path tests (.js)
+        │   ├── unit/           # Unit tests (.js)
+        │   ├── integration/    # Integration tests (.js)
+        │   └── e2e/           # End-to-end tests (.js)
+        ├── setup/             # Test configuration
+-       │   ├── jest.setup.ts  # Jest setup
++       │   ├── jest.setup.js  # Jest setup
+        │   └── env.js         # Test environment
+        └── mocks/            # Test mocks (.js)
+
+    File Naming & Structure:
+-     - Use TypeScript for all test files
++     - Use JavaScript for test files (.js)
++     - Use TypeScript for type definitions only (.d.ts)
+      - Name test files: `*.test.js`
+      - Group tests by feature/component
+      - Follow AAA pattern (Arrange, Act, Assert)
+
+    Test Configuration:
+-     - Single jest.config.ts
++     - Single jest.config.js
+      - Separate projects for different test types
+      - Consistent environment setup
+      - Clear mocking strategy
+
++   Rationale for JavaScript in Tests:
++     - Better compatibility with Jest
++     - Simpler mocking patterns
++     - Easier environment variable handling
++     - More straightforward module resolution
++     - Reduced complexity in test setup
++     - Better ESM/CommonJS compatibility
+
+    Action Items:
+-     1. Delete duplicate .ts files:
++     1. Delete duplicate .ts files and consolidate to .js:
+        - __tests__/supabase.test.ts
+        - tests/setup/jest.setup.ts
+        - jest.config.ts

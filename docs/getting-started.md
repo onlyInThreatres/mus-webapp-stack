@@ -1,14 +1,17 @@
-# 🚀 Getting Started
+# Getting Started
 
 ## Prerequisites
-
 - Node.js 20+
 - npm or yarn
 - Git
 - Supabase account
 - Vercel account (optional)
 
-## Initial Setup
+## Setup
+1. Create a new Supabase project
+2. Copy your project URL and anon key
+3. Add them to .env.local
+4. Start developing!
 
 1. **Clone the Repository**
 ```bash
@@ -43,3 +46,5 @@ npm run dev
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | Yes |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key | Yes |
 | `NEXT_PUBLIC_APP_URL` | Application URL | No | 
+
+No local Supabase setup required! 🎉

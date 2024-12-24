@@ -1,44 +1,31 @@
 /** @type {import('jest').Config} */
 const config = {
-  verbose: true,
-  testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['<rootDir>/tests/setup/jest.setup.js'],
+  testEnvironment: 'jest-environment-jsdom',
+  setupFilesAfterEnv: ['<rootDir>/__tests__/setup/jest.setup.js'],
+  moduleDirectories: ['node_modules', '<rootDir>'],
+  transform: {
+    '^.+\\.(t|j)sx?$': ['@swc/jest'],
+  },
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
-  transform: {
-    '^.+\\.(js|jsx)$': ['@swc/jest'],
-  },
-  transformIgnorePatterns: [
-    'node_modules/(?!(@supabase/supabase-js)/)',
+  testMatch: [
+    '**/__tests__/**/*.test.[jt]s?(x)',
   ],
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   projects: [
     {
       displayName: '🚨 Critical',
-      testMatch: ['<rootDir>/__tests__/critical/**/*.test.js'],
-      testEnvironment: 'node',
-    },
-    {
-      displayName: '🧪 Unit',
-      testMatch: ['<rootDir>/__tests__/unit/**/*.test.js'],
-      testEnvironment: 'jsdom',
+      testMatch: ['**/__tests__/critical/**/*.test.[jt]s?(x)'],
     },
     {
       displayName: '🔗 Integration',
-      testMatch: ['<rootDir>/__tests__/integration/**/*.test.js'],
-      testEnvironment: 'node',
+      testMatch: ['**/__tests__/integration/**/*.test.[jt]s?(x)'],
     },
     {
-      displayName: '🌐 E2E',
-      testMatch: ['<rootDir>/__tests__/e2e/**/*.test.js'],
-      testEnvironment: 'node',
-    }
+      displayName: '🧪 Unit',
+      testMatch: ['**/__tests__/unit/**/*.test.[jt]s?(x)'],
+    },
   ],
-  collectCoverage: true,
-  coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'lcov', 'clover'],
-  testPathIgnorePatterns: ['/node_modules/', '/.next/'],
 }
 
 module.exports = config 

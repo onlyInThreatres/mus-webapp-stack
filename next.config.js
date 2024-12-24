@@ -1,10 +1,24 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  images: {
-    domains: ['images.unsplash.com'], // Add any other image domains you need
+  swcMinify: true,
+  experimental: {
+    optimizeCss: true,
   },
-  // Add any other config options here
+  // Ensure these packages are transpiled
+  transpilePackages: [
+    '@radix-ui/react-slot',
+    'lucide-react',
+    'next-themes'
+  ],
+  // Enable Vercel Speed Insights
+  speedInsights: {
+    enabled: true,
+  },
+  // Enable Vercel Analytics
+  analytics: {
+    enabled: true,
+  }
 }
 
 module.exports = nextConfig

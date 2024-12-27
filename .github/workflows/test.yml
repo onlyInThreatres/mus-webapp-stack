@@ -10,11 +10,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
     
-    # Define environment variables at the job level
     env:
       NODE_ENV: test
       TEST_MODE: production
       CI: true
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
     
     steps:
     - uses: actions/checkout@v3
@@ -38,13 +40,18 @@ jobs:
         echo "SERVICE_KEY exists: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY != '' }}"
       
     - name: Run tests
-      env:
-        # Explicitly set the secrets at the step level
-        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-        SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       run: |
-        echo "Testing with URL: ${NEXT_PUBLIC_SUPABASE_URL:0:10}..."
-        echo "Has ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:+true}"
-        echo "Has SERVICE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:+true}"
-        npm run test:critical 
+        # Export variables to make them available to the Jest process
+        export NEXT_PUBLIC_SUPABASE_URL="${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}"
+        export NEXT_PUBLIC_SUPABASE_ANON_KEY="${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
+        export SUPABASE_SERVICE_ROLE_KEY="${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"
+        
+        # Run Jest with environment variables
+        npx cross-env \
+          NODE_ENV=test \
+          TEST_MODE=production \
+          CI=true \
+          NEXT_PUBLIC_SUPABASE_URL="$NEXT_PUBLIC_SUPABASE_URL" \
+          NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY" \
+          SUPABASE_SERVICE_ROLE_KEY="$SUPABASE_SERVICE_ROLE_KEY" \
+          jest --selectProjects Critical --config jest.config.js

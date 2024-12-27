@@ -12,7 +12,7 @@
     "test:coverage": "cross-env NODE_ENV=test jest --coverage",
     "test:critical": "cross-env NODE_ENV=test jest --selectProjects Critical --config jest.config.js",
     "test:critical:local": "cross-env NODE_ENV=test TEST_MODE=local npm run test:critical",
-    "test:critical:prod": "dotenv -e .env.test -- cross-env NODE_ENV=test TEST_MODE=production jest --selectProjects Critical --config jest.config.js",
+    "test:critical:prod": "dotenv -e .env.test cross-env NODE_ENV=test TEST_MODE=production npm run test:critical",
     "test:local": "npm run test:critical:local",
     "test:prod": "npm run test:critical:prod",
     "test:all": "npm run test:local && npm run test:prod",

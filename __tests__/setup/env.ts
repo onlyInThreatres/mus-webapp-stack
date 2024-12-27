@@ -3,7 +3,7 @@
  * Handles both local and production test environments
  */
 
-interface TestEnv {
+type TestEnv = {
   mode: 'local' | 'ci'
   TEST_MODE: 'local' | 'production'
   NEXT_PUBLIC_SUPABASE_URL: string
@@ -62,17 +62,7 @@ const validateEnv = () => {
   return mode
 }
 
-const getTestEnv = () => {
-  // Log environment details for debugging
-  console.log('🔧 Environment Setup:', {
-    NODE_ENV: process.env.NODE_ENV,
-    TEST_MODE: process.env.TEST_MODE,
-    CI: process.env.CI,
-    SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 10) + '...',
-    HAS_SERVICE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-    HAS_ANON_KEY: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  })
-
+const getTestEnv = (): TestEnv => {
   // Default values for local development
   const LOCAL_DEFAULTS = {
     NEXT_PUBLIC_SUPABASE_URL: 'http://localhost:54321',
@@ -80,30 +70,43 @@ const getTestEnv = () => {
     SUPABASE_SERVICE_ROLE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
   }
 
-  if (process.env.CI === 'true') {
-    // Validate CI environment
-    const missingVars = []
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) missingVars.push('NEXT_PUBLIC_SUPABASE_URL')
-    if (!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) missingVars.push('NEXT_PUBLIC_SUPABASE_ANON_KEY')
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) missingVars.push('SUPABASE_SERVICE_ROLE_KEY')
+  // Safe string truncation helper
+  const truncateUrl = (url: string) => url.length > 10 ? url.substring(0, 10) + '...' : url
 
-    if (missingVars.length > 0) {
-      throw new Error(`Missing required environment variables in CI: ${missingVars.join(', ')}`)
+  // Get environment variables with fallbacks
+  const getEnvVar = (key: string, defaultValue?: string): string => {
+    const value = process.env[key]
+    if (!value) {
+      if (defaultValue !== undefined) return defaultValue
+      throw new Error(`Missing required environment variable: ${key}`)
     }
+    return value
+  }
 
+  // Log initial environment state
+  console.log('🔧 Environment Setup:', {
+    NODE_ENV: process.env.NODE_ENV,
+    TEST_MODE: process.env.TEST_MODE,
+    CI: process.env.CI,
+    SUPABASE_URL: truncateUrl(getEnvVar('NEXT_PUBLIC_SUPABASE_URL', LOCAL_DEFAULTS.NEXT_PUBLIC_SUPABASE_URL)),
+    HAS_SERVICE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+    HAS_ANON_KEY: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  })
+
+  if (process.env.CI === 'true') {
     return {
-      mode: 'ci' as const,
+      mode: 'ci',
       TEST_MODE: 'production',
-      NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY
+      NEXT_PUBLIC_SUPABASE_URL: getEnvVar('NEXT_PUBLIC_SUPABASE_URL'),
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY'),
+      SUPABASE_SERVICE_ROLE_KEY: getEnvVar('SUPABASE_SERVICE_ROLE_KEY')
     }
   }
 
   // For local testing
   if (process.env.TEST_MODE === 'local') {
     return {
-      mode: 'local' as const,
+      mode: 'local',
       TEST_MODE: 'local',
       NEXT_PUBLIC_SUPABASE_URL: LOCAL_DEFAULTS.NEXT_PUBLIC_SUPABASE_URL,
       NEXT_PUBLIC_SUPABASE_ANON_KEY: LOCAL_DEFAULTS.NEXT_PUBLIC_SUPABASE_ANON_KEY,
@@ -112,16 +115,12 @@ const getTestEnv = () => {
   }
 
   // For production testing locally
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error('Missing required environment variables for production testing')
-  }
-
   return {
-    mode: 'local' as const,
+    mode: 'local',
     TEST_MODE: 'production',
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY
+    NEXT_PUBLIC_SUPABASE_URL: getEnvVar('NEXT_PUBLIC_SUPABASE_URL'),
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY'),
+    SUPABASE_SERVICE_ROLE_KEY: getEnvVar('SUPABASE_SERVICE_ROLE_KEY')
   }
 }
 
@@ -129,7 +128,7 @@ export const testEnv = getTestEnv()
 
 // Log final configuration
 console.log('🔧 Test Environment:', {
-  NEXT_PUBLIC_SUPABASE_URL: testEnv.NEXT_PUBLIC_SUPABASE_URL.substring(0, 10) + '...',
+  NEXT_PUBLIC_SUPABASE_URL: truncateUrl(testEnv.NEXT_PUBLIC_SUPABASE_URL),
   HAS_ANON_KEY: !!testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   TEST_MODE: testEnv.TEST_MODE,
   NODE_ENV: process.env.NODE_ENV

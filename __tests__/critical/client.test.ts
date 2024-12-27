@@ -4,18 +4,19 @@
  */
 
 import { createClient } from '@supabase/supabase-js'
+import type { Database } from '@/lib/types/supabase'
 import { testEnv } from '../setup/env'
 
 describe('🔌 Supabase Client Configuration', () => {
-  let supabase: ReturnType<typeof createClient>
+  let supabase: ReturnType<typeof createClient<Database>>
 
   beforeAll(() => {
     if (!testEnv.NEXT_PUBLIC_SUPABASE_URL || !testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
       throw new Error('Missing required Supabase configuration')
     }
 
-    // Initialize client
-    supabase = createClient(
+    // Initialize client with proper types
+    supabase = createClient<Database>(
       testEnv.NEXT_PUBLIC_SUPABASE_URL,
       testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY
     )

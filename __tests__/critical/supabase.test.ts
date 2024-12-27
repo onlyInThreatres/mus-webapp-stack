@@ -1,11 +1,13 @@
-// 🔗 Supabase Connection Test
-const { createClient } = require('@supabase/supabase-js')
-const { testEnv } = require('../tests/setup/env')
+import { createClient } from '@supabase/supabase-js'
+import { testEnv } from '../setup/env'
+import { Database } from '@/lib/types/supabase'
 
-describe('Supabase Connection', () => {
-  let supabase
+describe('🔗 Supabase Critical Path', () => {
+  let supabase = createClient<Database>(
+    testEnv.NEXT_PUBLIC_SUPABASE_URL,
+    testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  )
 
-  // 🔧 Setup before tests
   beforeAll(() => {
     // 🔍 Debug environment variables
     console.log('Test Environment:', {
@@ -17,15 +19,8 @@ describe('Supabase Connection', () => {
     if (!testEnv.NEXT_PUBLIC_SUPABASE_URL || !testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
       throw new Error('Missing required Supabase environment variables')
     }
-
-    // 🏗️ Initialize Supabase client
-    supabase = createClient(
-      testEnv.NEXT_PUBLIC_SUPABASE_URL,
-      testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    )
   })
 
-  // 🧪 Test Supabase connection
   it('should connect to Supabase', async () => {
     const { data, error } = await supabase.auth.getSession()
     
@@ -37,4 +32,4 @@ describe('Supabase Connection', () => {
     console.log('🟢 Successfully connected to Supabase')
     expect(data).toBeDefined()
   })
-}) 
+})

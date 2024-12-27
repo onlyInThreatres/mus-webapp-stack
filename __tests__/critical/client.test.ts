@@ -1,17 +1,16 @@
 /**
- * 🧪 Supabase Client Tests
- * Tests core functionality of our Supabase setup
+ * 🧪 Supabase Client Integration Tests
+ * Validates core Supabase client functionality and data operations
  */
 
 import { createClient } from '@supabase/supabase-js'
 import { testEnv } from '../setup/env'
 import { Database } from '@/lib/types/supabase'
 
-describe('Supabase Client Tests', () => {
-  // Use service_role key for testing to bypass RLS
+describe('🔌 Supabase Client Configuration', () => {
   const supabase = createClient<Database>(
-    testEnv.NEXT_PUBLIC_SUPABASE_URL!,
-    testEnv.SUPABASE_SERVICE_ROLE_KEY!, // Use service role key instead of anon key
+    testEnv.NEXT_PUBLIC_SUPABASE_URL,
+    testEnv.SUPABASE_SERVICE_ROLE_KEY,
     {
       auth: {
         autoRefreshToken: false,
@@ -37,40 +36,42 @@ describe('Supabase Client Tests', () => {
   }
 
   beforeAll(() => {
-    // Validate service role key
-    if (!testEnv.SUPABASE_SERVICE_ROLE_KEY) {
-      throw new Error('🔴 Missing SUPABASE_SERVICE_ROLE_KEY for tests')
+    if (testEnv.mode === 'ci' && (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY)) {
+      throw new Error('🔴 Missing required environment variables in CI')
     }
+
+    console.log('🔍 Starting Supabase Client Tests:', {
+      mode: testEnv.TEST_MODE,
+      url: testEnv.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 10) + '...'
+    })
   })
 
-  test('client is properly configured', () => {
+  test('should initialize client with correct configuration', () => {
     expect(supabase).toBeDefined()
     expect(supabase.auth).toBeDefined()
+    console.log('✅ Client initialized successfully')
   })
 
-  test('can upsert profile', async () => {
-    try {
+  describe('📝 Profile Management', () => {
+    test('should create and retrieve user profile', async () => {
       const { data, error } = await supabase
         .from('profiles')
         .upsert(mockProfile)
         .select()
 
       if (error) {
-        console.error('🔴 Upsert error:', error)
+        console.error('🔴 Profile creation failed:', error)
       }
 
       expect(error).toBeNull()
       expect(data).toBeDefined()
-    } catch (err) {
-      console.error('🔴 Test failed:', err)
-      throw err
-    }
+      console.log('✅ Profile created successfully')
+    })
   })
 
-  // Proper teardown
   afterAll(async () => {
     try {
-      // Clean up test data
+      console.log('🧹 Cleaning up test data...')
       const { error } = await supabase
         .from('profiles')
         .delete()
@@ -78,12 +79,11 @@ describe('Supabase Client Tests', () => {
       
       if (error) {
         console.error('🔴 Cleanup error:', error)
+      } else {
+        console.log('✅ Test data cleaned up successfully')
       }
 
-      // Sign out and remove auth state
       await supabase.auth.signOut()
-      
-      // Allow time for connections to close gracefully
       await new Promise(resolve => setTimeout(resolve, 1000))
     } catch (err) {
       console.error('🔴 Teardown error:', err)

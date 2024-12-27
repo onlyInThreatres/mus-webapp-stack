@@ -6,13 +6,13 @@ console.log('🔍 Test Environment:', {
   nodeEnv: process.env.NODE_ENV,
   supabaseUrl: '***', // Masked for security
   hasAnonKey: Boolean(testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY),
-  testMode: testEnv.TEST_MODE
+  testMode: testEnv.TEST_MODE,
+  mode: testEnv.mode
 })
 
 // Global teardown
 afterAll(async () => {
-  // Add global cleanup if needed
-  await new Promise(resolve => setTimeout(resolve, 500)) // Allow connections to close
+  await new Promise(resolve => setTimeout(resolve, 500))
 })
 
 // Increase test timeout for Supabase operations

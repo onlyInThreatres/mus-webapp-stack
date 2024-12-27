@@ -10,14 +10,12 @@ jobs:
   test:
     runs-on: ubuntu-latest
     
+    # Define environment variables at the job level
     env:
-      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-      CI: true
       NODE_ENV: test
       TEST_MODE: production
-
+      CI: true
+    
     steps:
     - uses: actions/checkout@v3
     
@@ -35,9 +33,18 @@ jobs:
         echo "NODE_ENV: $NODE_ENV"
         echo "TEST_MODE: $TEST_MODE"
         echo "CI: $CI"
-        echo "Has NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' }}"
-        echo "Has NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY != '' }}"
-        echo "Has SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY != '' }}"
+        echo "SUPABASE_URL exists: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' }}"
+        echo "ANON_KEY exists: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY != '' }}"
+        echo "SERVICE_KEY exists: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY != '' }}"
       
     - name: Run tests
-      run: npm run test:critical 
+      env:
+        # Explicitly set the secrets at the step level
+        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      run: |
+        echo "Testing with URL: ${NEXT_PUBLIC_SUPABASE_URL:0:10}..."
+        echo "Has ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:+true}"
+        echo "Has SERVICE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:+true}"
+        npm run test:critical 

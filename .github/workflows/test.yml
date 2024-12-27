@@ -2,25 +2,46 @@ name: Test
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     
     env:
+      TEST_MODE: production
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-      CI: true
 
     steps:
     - uses: actions/checkout@v3
-    - name: Use Node.js
+    
+    - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '20.x'
-    - run: npm ci
-    - run: npm run test:critical 
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run tests
+      run: |
+        echo "🔍 Checking environment variables..."
+        if [ -z "$NEXT_PUBLIC_SUPABASE_URL" ]; then
+          echo "❌ NEXT_PUBLIC_SUPABASE_URL is missing"
+          exit 1
+        fi
+        if [ -z "$NEXT_PUBLIC_SUPABASE_ANON_KEY" ]; then
+          echo "❌ NEXT_PUBLIC_SUPABASE_ANON_KEY is missing"
+          exit 1
+        fi
+        if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+          echo "❌ SUPABASE_SERVICE_ROLE_KEY is missing"
+          exit 1
+        fi
+        echo "✅ Environment variables verified"
+        npm run test:prod 

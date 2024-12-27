@@ -62,19 +62,45 @@ const validateEnv = () => {
   return mode
 }
 
-export const testEnv: TestEnv = {
-  mode: process.env.CI ? 'ci' : 'local',
-  TEST_MODE: validateEnv(),
-  NEXT_PUBLIC_SUPABASE_URL: process.env.TEST_MODE === 'production'
-    ? process.env.NEXT_PUBLIC_SUPABASE_URL!
-    : 'http://localhost:54321',
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.TEST_MODE === 'production'
-    ? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
-  SUPABASE_SERVICE_ROLE_KEY: process.env.TEST_MODE === 'production'
-    ? process.env.SUPABASE_SERVICE_ROLE_KEY!
-    : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+const getTestEnv = () => {
+  // Log environment details for debugging
+  console.log('🔧 Environment Setup:', {
+    NODE_ENV: process.env.NODE_ENV,
+    TEST_MODE: process.env.TEST_MODE,
+    CI: process.env.CI,
+    SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 10) + '...',
+    HAS_SERVICE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+    HAS_ANON_KEY: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  })
+
+  if (process.env.CI) {
+    // In CI, always use production credentials
+    return {
+      mode: 'ci' as const,
+      TEST_MODE: 'production',
+      NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY!
+    }
+  }
+
+  // Local development can switch between local/production
+  return {
+    mode: 'local' as const,
+    TEST_MODE: process.env.TEST_MODE || 'local',
+    NEXT_PUBLIC_SUPABASE_URL: process.env.TEST_MODE === 'production' 
+      ? process.env.NEXT_PUBLIC_SUPABASE_URL!
+      : process.env.LOCAL_SUPABASE_URL!,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.TEST_MODE === 'production'
+      ? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      : process.env.LOCAL_SUPABASE_ANON_KEY!,
+    SUPABASE_SERVICE_ROLE_KEY: process.env.TEST_MODE === 'production'
+      ? process.env.SUPABASE_SERVICE_ROLE_KEY!
+      : process.env.LOCAL_SERVICE_ROLE_KEY!
+  }
 }
+
+export const testEnv = getTestEnv()
 
 // Log environment details
 console.log('🔧 Test Environment:', {

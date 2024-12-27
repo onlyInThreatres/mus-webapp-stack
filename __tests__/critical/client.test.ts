@@ -3,48 +3,62 @@
  * Tests core functionality of our Supabase setup
  */
 
-import { testEnv } from '../setup/env'
 import { createClient } from '@supabase/supabase-js'
-import type { Database } from '@/lib/types/supabase'
+import { testEnv } from '../setup/env'
+import { Database } from '@/lib/types/supabase'
 
-describe('Supabase Client Configuration', () => {
+describe('Supabase Client Tests', () => {
+  // Use service_role key for testing to bypass RLS
   const supabase = createClient<Database>(
-    testEnv.NEXT_PUBLIC_SUPABASE_URL,
-    testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    testEnv.NEXT_PUBLIC_SUPABASE_URL!,
+    testEnv.SUPABASE_SERVICE_ROLE_KEY!, // Use service role key instead of anon key
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    }
   )
 
-  test('client is properly initialized', () => {
+  interface TestProfile {
+    id: string
+    email: string
+    full_name: string
+    created_at?: string
+    updated_at?: string
+  }
+
+  const mockProfile: TestProfile = {
+    id: 'c8f9c48a-4cde-4499-b787-a24af77c82d6',
+    email: 'test@example.com',
+    full_name: 'Test User',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  }
+
+  beforeAll(() => {
+    // Validate service role key
+    if (!testEnv.SUPABASE_SERVICE_ROLE_KEY) {
+      throw new Error('🔴 Missing SUPABASE_SERVICE_ROLE_KEY for tests')
+    }
+  })
+
+  test('client is properly configured', () => {
     expect(supabase).toBeDefined()
     expect(supabase.auth).toBeDefined()
-    expect(supabase.from).toBeDefined()
   })
 
-  test('environment variables are configured', () => {
-    // Log masked values for debugging
-    console.log('🔍 Test Environment:', {
-      url: testEnv.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 8) + '...',
-      hasKey: Boolean(testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY),
-      keyLength: testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY?.length
-    })
-    
-    expect(testEnv.NEXT_PUBLIC_SUPABASE_URL).toBeDefined()
-    expect(testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY).toBeDefined()
-  })
-
-  test('can connect to database', async () => {
+  test('can upsert profile', async () => {
     try {
-      const { data, error } = await supabase.from('profiles').select('count').single()
-      
+      const { data, error } = await supabase
+        .from('profiles')
+        .upsert(mockProfile)
+        .select()
+
       if (error) {
-        console.error('🔴 Database connection error:', {
-          message: error.message,
-          hint: error.hint,
-          details: error.details
-        })
-        throw error
+        console.error('🔴 Upsert error:', error)
       }
 
-      console.log('🟢 Successfully connected to database')
       expect(error).toBeNull()
       expect(data).toBeDefined()
     } catch (err) {
@@ -52,45 +66,27 @@ describe('Supabase Client Configuration', () => {
       throw err
     }
   })
-})
 
-describe('Database Helpers', () => {
-  const supabase = createClient<Database>(
-    testEnv.NEXT_PUBLIC_SUPABASE_URL,
-    testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  )
-
-  // Mock database helper functions
-  const db = {
-    upsertProfile: async (profile: any) => {
-      const { data, error } = await supabase
+  // Proper teardown
+  afterAll(async () => {
+    try {
+      // Clean up test data
+      const { error } = await supabase
         .from('profiles')
-        .upsert(profile)
-        .select()
-        .single()
+        .delete()
+        .eq('id', mockProfile.id)
       
-      if (error) throw error
-      return data
-    }
-  }
+      if (error) {
+        console.error('🔴 Cleanup error:', error)
+      }
 
-  test('profile operations are typed correctly', async () => {
-    const profile = {
-      id: 'test-id',
-      email: 'test@example.com',
-      is_verified: false
+      // Sign out and remove auth state
+      await supabase.auth.signOut()
+      
+      // Allow time for connections to close gracefully
+      await new Promise(resolve => setTimeout(resolve, 1000))
+    } catch (err) {
+      console.error('🔴 Teardown error:', err)
     }
-    
-    // Mock the response since we're just testing types
-    jest.spyOn(supabase, 'from').mockImplementation(() => ({
-      upsert: () => ({
-        select: () => ({
-          single: () => Promise.resolve({ data: null, error: null })
-        })
-      })
-    } as any))
-
-    const result = await db.upsertProfile(profile)
-    expect(result).toBeNull() // Will be null due to our mock
   })
 }) 

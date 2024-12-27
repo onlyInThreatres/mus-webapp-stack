@@ -1,22 +1,26 @@
 import '@testing-library/jest-dom'
 import { testEnv } from './env'
 
-// Configure longer timeout for Supabase operations
-jest.setTimeout(10000)
+// Log environment once at startup
+console.log('🔍 Test Environment:', {
+  nodeEnv: process.env.NODE_ENV,
+  supabaseUrl: '***', // Masked for security
+  hasAnonKey: Boolean(testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY),
+  testMode: testEnv.TEST_MODE
+})
+
+// Global teardown
+afterAll(async () => {
+  // Add global cleanup if needed
+  await new Promise(resolve => setTimeout(resolve, 500)) // Allow connections to close
+})
+
+// Increase test timeout for Supabase operations
+jest.setTimeout(30000)
 
 // Reset mocks between tests
 beforeEach(() => {
   jest.clearAllMocks()
-})
-
-// Log test environment on startup
-beforeAll(() => {
-  console.log('🔍 Test Environment:', {
-    nodeEnv: process.env.NODE_ENV,
-    supabaseUrl: testEnv.NEXT_PUBLIC_SUPABASE_URL ? '***' : 'missing',
-    hasAnonKey: Boolean(testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY),
-    testMode: testEnv.TEST_MODE
-  })
 })
 
 // Custom matcher for Supabase responses

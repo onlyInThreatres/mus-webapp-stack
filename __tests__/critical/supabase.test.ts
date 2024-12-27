@@ -3,9 +3,9 @@ import { testEnv } from '../setup/env'
 import { Database } from '@/lib/types/supabase'
 
 describe('🔗 Supabase Critical Path', () => {
-  let supabase = createClient<Database>(
-    testEnv.NEXT_PUBLIC_SUPABASE_URL,
-    testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const supabase = createClient<Database>(
+    testEnv.NEXT_PUBLIC_SUPABASE_URL!,
+    testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
   beforeAll(() => {

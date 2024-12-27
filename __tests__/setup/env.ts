@@ -6,21 +6,21 @@ type TestMode = 'local' | 'remote'
 
 // Environment configuration based on test mode
 export const testEnv = {
-  // Determine test mode - defaults to local if not specified
-  TEST_MODE: (process.env.TEST_MODE || 'local') as TestMode,
-  
-  // URLs and Keys - select based on test mode
-  NEXT_PUBLIC_SUPABASE_URL: process.env.TEST_MODE === 'local' 
-    ? process.env.LOCAL_SUPABASE_URL 
-    : process.env.NEXT_PUBLIC_SUPABASE_URL,
-    
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.TEST_MODE === 'local'
-    ? process.env.LOCAL_SUPABASE_ANON_KEY
-    : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    
-  DATABASE_URL: process.env.TEST_MODE === 'local'
-    ? process.env.LOCAL_DATABASE_URL
-    : process.env.TEST_DATABASE_URL,
+  ...process.env,
+  TEST_MODE: process.env.TEST_MODE || 'local',
+  // Use different URLs and keys based on TEST_MODE
+  NEXT_PUBLIC_SUPABASE_URL: process.env.TEST_MODE === 'remote' 
+    ? process.env.TEST_SUPABASE_URL 
+    : 'http://localhost:54321',
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.TEST_MODE === 'remote'
+    ? process.env.TEST_SUPABASE_ANON_KEY
+    : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+  SUPABASE_SERVICE_ROLE_KEY: process.env.TEST_MODE === 'remote'
+    ? process.env.SUPABASE_SERVICE_ROLE_KEY
+    : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU',
+  DATABASE_URL: process.env.TEST_MODE === 'remote'
+    ? process.env.TEST_DATABASE_URL
+    : 'postgresql://postgres:postgres@localhost:54321/postgres'
 }
 
 // Enhanced debugging with environment awareness
@@ -31,35 +31,28 @@ const debugInfo = {
   vars: {
     url: Boolean(testEnv.NEXT_PUBLIC_SUPABASE_URL),
     key: Boolean(testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY),
+    serviceKey: Boolean(testEnv.SUPABASE_SERVICE_ROLE_KEY),
     dbUrl: Boolean(testEnv.DATABASE_URL)
   }
 }
 
 // Validate environment based on test mode
 if (testEnv.TEST_MODE === 'local') {
-  // Check if local Supabase is running
-  const isLocalSupabaseRunning = async () => {
-    try {
-      const response = await fetch('http://localhost:54321/rest/v1/')
-      return response.status !== 404
-    } catch {
-      return false
-    }
-  }
-
   // Log local setup status
   console.log('🔧 Local Test Environment:', {
     mode: 'local',
     supabaseUrl: testEnv.NEXT_PUBLIC_SUPABASE_URL,
-    hasKey: Boolean(testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+    hasKey: Boolean(testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY),
+    hasServiceKey: Boolean(testEnv.SUPABASE_SERVICE_ROLE_KEY)
   })
 } else {
   // Validate remote environment variables
-  if (!testEnv.NEXT_PUBLIC_SUPABASE_URL || !testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  if (!testEnv.NEXT_PUBLIC_SUPABASE_URL || !testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY || !testEnv.SUPABASE_SERVICE_ROLE_KEY) {
     console.error('🔴 Remote Test Environment Error:', {
       ...debugInfo,
       supabaseUrl: testEnv.NEXT_PUBLIC_SUPABASE_URL ? `${testEnv.NEXT_PUBLIC_SUPABASE_URL.substring(0, 8)}...` : 'missing',
-      keyLength: testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY?.length || 0
+      keyLength: testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY?.length || 0,
+      serviceKeyLength: testEnv.SUPABASE_SERVICE_ROLE_KEY?.length || 0
     })
     throw new Error('Missing required remote Supabase environment variables')
   }
@@ -68,7 +61,8 @@ if (testEnv.TEST_MODE === 'local') {
   console.log('🌎 Remote Test Environment:', {
     mode: 'remote',
     supabaseUrl: `${testEnv.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 8)}...`,
-    hasKey: Boolean(testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+    hasKey: Boolean(testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY),
+    hasServiceKey: Boolean(testEnv.SUPABASE_SERVICE_ROLE_KEY)
   })
 }
 

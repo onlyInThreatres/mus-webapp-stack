@@ -73,6 +73,13 @@ const getTestEnv = () => {
     HAS_ANON_KEY: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   })
 
+  // Default values for local development
+  const LOCAL_DEFAULTS = {
+    NEXT_PUBLIC_SUPABASE_URL: 'http://localhost:54321',
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+    SUPABASE_SERVICE_ROLE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+  }
+
   if (process.env.CI) {
     // In CI, always use production credentials
     return {
@@ -84,28 +91,33 @@ const getTestEnv = () => {
     }
   }
 
-  // Local development can switch between local/production
+  // For local testing
+  if (process.env.TEST_MODE === 'local') {
+    return {
+      mode: 'local' as const,
+      TEST_MODE: 'local',
+      NEXT_PUBLIC_SUPABASE_URL: LOCAL_DEFAULTS.NEXT_PUBLIC_SUPABASE_URL,
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: LOCAL_DEFAULTS.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      SUPABASE_SERVICE_ROLE_KEY: LOCAL_DEFAULTS.SUPABASE_SERVICE_ROLE_KEY
+    }
+  }
+
+  // For production testing locally
   return {
     mode: 'local' as const,
-    TEST_MODE: process.env.TEST_MODE || 'local',
-    NEXT_PUBLIC_SUPABASE_URL: process.env.TEST_MODE === 'production' 
-      ? process.env.NEXT_PUBLIC_SUPABASE_URL!
-      : process.env.LOCAL_SUPABASE_URL!,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.TEST_MODE === 'production'
-      ? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      : process.env.LOCAL_SUPABASE_ANON_KEY!,
-    SUPABASE_SERVICE_ROLE_KEY: process.env.TEST_MODE === 'production'
-      ? process.env.SUPABASE_SERVICE_ROLE_KEY!
-      : process.env.LOCAL_SERVICE_ROLE_KEY!
+    TEST_MODE: 'production',
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY!
   }
 }
 
 export const testEnv = getTestEnv()
 
-// Log environment details
+// Log final configuration
 console.log('🔧 Test Environment:', {
-  NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 8) + '...',
-  HAS_ANON_KEY: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  TEST_MODE: process.env.TEST_MODE,
+  NEXT_PUBLIC_SUPABASE_URL: testEnv.NEXT_PUBLIC_SUPABASE_URL.substring(0, 10) + '...',
+  HAS_ANON_KEY: !!testEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  TEST_MODE: testEnv.TEST_MODE,
   NODE_ENV: process.env.NODE_ENV
 }) 

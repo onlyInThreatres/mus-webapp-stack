@@ -11,11 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      NODE_ENV: test
-      TEST_MODE: production
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      CI: true
+      NODE_ENV: test
+      TEST_MODE: production
 
     steps:
     - uses: actions/checkout@v3
@@ -33,15 +34,10 @@ jobs:
       run: |
         echo "NODE_ENV: $NODE_ENV"
         echo "TEST_MODE: $TEST_MODE"
-        echo "SUPABASE_URL exists: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' }}"
-        echo "ANON_KEY exists: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY != '' }}"
-        echo "SERVICE_KEY exists: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY != '' }}"
+        echo "CI: $CI"
+        echo "Has NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' }}"
+        echo "Has NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY != '' }}"
+        echo "Has SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY != '' }}"
       
     - name: Run tests
-      env:
-        NODE_ENV: test
-        TEST_MODE: production
-        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-        SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       run: npm run test:critical 
